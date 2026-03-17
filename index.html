@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>QuickMart</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f4f4f4;
+}
+
+/* Navbar */
+nav{
+  background:#0a0a0a;
+  color:white;
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+nav h2{
+  margin:0;
+  color:#00ff99;
+}
+
+nav a{
+  color:white;
+  margin:0 10px;
+  text-decoration:none;
+}
+
+/* Hero Section */
+.hero{
+  background:linear-gradient(to right,#00ff99,#00ccff);
+  color:black;
+  text-align:center;
+  padding:50px;
+}
+
+.hero h1{
+  margin:0;
+  font-size:40px;
+}
+
+/* Products */
+.container{
+  padding:20px;
+  text-align:center;
+}
+
+.products{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:20px;
+}
+
+.card{
+  background:white;
+  padding:20px;
+  width:220px;
+  border-radius:12px;
+  box-shadow:0 0 10px rgba(0,0,0,0.1);
+  transition:0.3s;
+}
+
+.card:hover{
+  transform:scale(1.07);
+}
+
+button{
+  background:#00cc66;
+  color:white;
+  border:none;
+  padding:10px;
+  cursor:pointer;
+  border-radius:5px;
+}
+
+button:hover{
+  background:#00994d;
+}
+
+/* Footer */
+footer{
+  background:#111;
+  color:white;
+  text-align:center;
+  padding:15px;
+  margin-top:30px;
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- Navbar -->
+<nav>
+  <h2>QuickMart</h2>
+  <div>
+    <a href="#">Home</a>
+    <a href="#">Products</a>
+    <a href="#">Contact</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+  <h1>Welcome to QuickMart 🛒</h1>
+  <p>Best Deals Everyday</p>
+</div>
+
+<!-- Products -->
+<div class="container">
+  <h2>Popular Products</h2>
+
+  <div class="products">
+
+    <div class="card">
+      <h3>Rice</h3>
+      <p>₹60/kg</p>
+      <button onclick="buy()">Buy Now</button>
+    </div>
+
+    <div class="card">
+      <h3>Sugar</h3>
+      <p>₹50/kg</p>
+      <button onclick="buy()">Buy Now</button>
+    </div>
+
+    <div class="card">
+      <h3>Oil</h3>
+      <p>₹120</p>
+      <button onclick="buy()">Buy Now</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <p>© 2026 QuickMart | All Rights Reserved</p>
+</footer>
+
+<script>
+function buy(){
+  alert("Product added to cart 🛒");
+}
+</script>
+
+</body>
+</html>
