@@ -1,124 +1,161 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>QuickMart Boss</title>
-
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
+<title>QuickMart Express</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body{font-family:Arial;margin:0;background:#f4f4f4}
-nav{background:#000;color:#fff;padding:10px;display:flex;justify-content:space-between}
-.container{padding:20px}
-.card{background:#fff;padding:15px;margin:10px;border-radius:10px}
-button{padding:10px;border:none;background:#00cc66;color:#fff;cursor:pointer}
+body{margin:0;font-family:sans-serif;background:#f7f7f7}
+
+/* Top bar */
+.top{
+  background:#ffe500;
+  padding:10px;
+  position:sticky;
+  top:0;
+}
+
+.search{
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:8px;
+}
+
+/* Categories */
+.cats{
+  display:flex;
+  overflow:auto;
+  gap:10px;
+  padding:10px;
+}
+
+.cat{
+  background:white;
+  padding:10px;
+  border-radius:10px;
+  min-width:90px;
+  text-align:center;
+  cursor:pointer;
+}
+
+/* Products */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  padding:10px;
+}
+
+.card{
+  background:white;
+  padding:10px;
+  border-radius:10px;
+}
+
+.card img{
+  width:100%;
+  border-radius:10px;
+}
+
+button{
+  background:#00b300;
+  color:white;
+  border:none;
+  padding:8px;
+  width:100%;
+  margin-top:5px;
+}
+
+/* Cart bar */
+.cartbar{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background:black;
+  color:white;
+  display:flex;
+  justify-content:space-between;
+  padding:10px;
+}
 </style>
+
 </head>
 
 <body>
 
-<nav>
-<h2>QuickMart Boss 🛒</h2>
-<span id="user"></span>
-</nav>
-
-<div class="container">
-
-<h3>Login</h3>
-<input id="email" placeholder="Email"><br><br>
-<input id="pass" type="password" placeholder="Password"><br><br>
-<button onclick="signup()">Signup</button>
-<button onclick="login()">Login</button>
-
-<hr>
-
-<h3>Products</h3>
-
-<div class="card">
-Rice ₹60 <button onclick="add('Rice',60)">Add</button>
+<!-- Top -->
+<div class="top">
+  <input id="search" class="search" placeholder="Search products..." onkeyup="filter()">
 </div>
 
-<div class="card">
-Sugar ₹50 <button onclick="add('Sugar',50)">Add</button>
+<!-- Categories -->
+<div class="cats">
+  <div class="cat" onclick="show('all')">All</div>
+  <div class="cat" onclick="show('fruit')">Fruits</div>
+  <div class="cat" onclick="show('drink')">Drinks</div>
 </div>
 
-<div class="card">
-Oil ₹120 <button onclick="add('Oil',120)">Add</button>
-</div>
+<!-- Products -->
+<div class="grid" id="grid"></div>
 
-<hr>
-
-<h3>Cart</h3>
-<p id="cart"></p>
-<p>Total: ₹<span id="total">0</span></p>
-
-<button onclick="order()">Place Order</button>
-
+<!-- Cart -->
+<div class="cartbar">
+  <span id="count">0 items</span>
+  <span>₹<span id="total">0</span></span>
+  <button onclick="order()">Order</button>
 </div>
 
 <script>
-const firebaseConfig = {
-  apiKey: "PASTE",
-};
+let products=[
+{name:"Apple",price:120,cat:"fruit",img:"https://via.placeholder.com/150"},
+{name:"Banana",price:40,cat:"fruit",img:"https://via.placeholder.com/150"},
+{name:"Milk",price:50,cat:"drink",img:"https://via.placeholder.com/150"},
+{name:"Juice",price:80,cat:"drink",img:"https://via.placeholder.com/150"}
+];
 
-firebase.initializeApp(firebaseConfig);
+let cart=[];
+let total=0;
 
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-let cart = [];
-let total = 0;
-let userEmail = "";
-
-// Signup
-function signup(){
-  let e = email.value;
-  let p = pass.value;
-  auth.createUserWithEmailAndPassword(e,p)
-  .then(()=>alert("Signup Success"))
-  .catch(err=>alert(err.message));
+function load(list){
+let html="";
+list.forEach(p=>{
+html+=`
+<div class="card">
+<img src="${p.img}">
+<h4>${p.name}</h4>
+<p>₹${p.price}</p>
+<button onclick="add('${p.name}',${p.price})">Add</button>
+</div>`;
+});
+document.getElementById("grid").innerHTML=html;
 }
 
-// Login
-function login(){
-  let e = email.value;
-  let p = pass.value;
-  auth.signInWithEmailAndPassword(e,p)
-  .then(user=>{
-    userEmail = user.user.email;
-    document.getElementById("user").innerText = userEmail;
-    alert("Login Success");
-  })
-  .catch(err=>alert(err.message));
-}
-
-// Add to cart
 function add(name,price){
-  cart.push(name);
-  total += price;
-  document.getElementById("cart").innerText = cart.join(", ");
-  document.getElementById("total").innerText = total;
+cart.push(name);
+total+=price;
+document.getElementById("count").innerText=cart.length+" items";
+document.getElementById("total").innerText=total;
 }
 
-// Place order
+function show(cat){
+if(cat=="all"){load(products);return;}
+let f=products.filter(p=>p.cat==cat);
+load(f);
+}
+
+function filter(){
+let s=document.getElementById("search").value.toLowerCase();
+let f=products.filter(p=>p.name.toLowerCase().includes(s));
+load(f);
+}
+
 function order(){
-  if(!userEmail){
-    alert("Login first");
-    return;
-  }
-
-  db.collection("orders").add({
-    user: userEmail,
-    items: cart,
-    total: total,
-    time: new Date()
-  })
-  .then(()=>{
-    alert("Order Placed 🔥");
-    window.open("https://wa.me/91XXXXXXXXXX?text=Order:"+cart.join(",")+" Total ₹"+total);
-  });
+let msg="Order: "+cart.join(",")+" Total ₹"+total;
+window.open("https://wa.me/91XXXXXXXXXX?text="+encodeURIComponent(msg));
 }
+
+load(products);
 </script>
 
 </body>
